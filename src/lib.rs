@@ -27,7 +27,7 @@ match save.root.properties["NumberOfGamesPlayed"] {
 ```
 */
 
-mod error;
+pub mod error;
 
 pub use error::Error;
 
@@ -977,7 +977,7 @@ impl<R: Read + Seek> Readable<R> for FFormatArgumentDataValue {
             3 => Ok(Self::Double(reader.read_f64::<LE>()?)),
             4 => Ok(Self::Text(std::boxed::Box::new(Text::read(reader)?))),
             5 => Ok(Self::Gender(reader.read_u64::<LE>()?)),
-            _ => Err(Error::Other(format!(
+            _ => Err(Error::Unimplemented(format!(
                 "unimplemented variant for FFormatArgumentDataValue 0x{type_:x}"
             ))),
         }
@@ -1035,7 +1035,7 @@ impl<R: Read + Seek> Readable<R> for FFormatArgumentValue {
             3 => Ok(Self::Double(reader.read_f64::<LE>()?)),
             4 => Ok(Self::Text(std::boxed::Box::new(Text::read(reader)?))),
             5 => Ok(Self::Gender(reader.read_u64::<LE>()?)),
-            _ => Err(Error::Other(format!(
+            _ => Err(Error::Unimplemented(format!(
                 "unimplemented variant for FFormatArgumentValue 0x{type_:x}"
             ))),
         }
@@ -1191,7 +1191,7 @@ impl<R: Read + Seek> Readable<R> for Text {
                     key: read_string(reader)?,
                 }
             }),
-            _ => Err(Error::Other(format!(
+            _ => Err(Error::Unimplemented(format!(
                 "unimplemented variant for FTextHistory 0x{text_history_type:x}"
             ))),
         }?;
@@ -1389,7 +1389,7 @@ impl PropertyValue {
             PropertyType::StructProperty => {
                 PropertyValue::Struct(StructValue::read(reader, st.as_ref().unwrap())?)
             }
-            _ => return Err(Error::Other(format!("unimplemented property {t:?}"))),
+            _ => return Err(Error::Unimplemented(format!("unimplemented property {t:?}"))),
         })
     }
     fn write<W: Write>(&self, writer: &mut Context<W>) -> TResult<()> {
